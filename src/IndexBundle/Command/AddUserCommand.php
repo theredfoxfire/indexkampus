@@ -186,7 +186,7 @@ class AddUserCommand extends ContainerAwareCommand
 	*/
 	private function getCommandHelp()
 	{
-		return << HELP
+		return <<<HELP
 		The <info>%command.name% command creates new user and saves them in the database:
 		<info>php %command.full_name%</info> <comment>username password email</comment>
 		By default the command creates regular users. To create administrator users,
@@ -206,6 +206,6 @@ class AddUserCommand extends ContainerAwareCommand
 		#command will ask you for all arguments
 		<info>php %command.full_name%</info>
 
-		HELP;
+HELP;
 	}
 }
