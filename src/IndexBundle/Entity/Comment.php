@@ -3,10 +3,10 @@
 namespace IndexBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Comment
- *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="IndexBundle\Entity\CommentRepository")
  */
@@ -15,40 +15,62 @@ class Comment
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="post_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="Post", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $postId;
+    private $post;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="content", type="text")
+     * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="comment.blank")
+     * @Assert\Length(
+     *  min = "5",
+     *  minMessage = "comment.too_short",
+     *  max = "10000",
+     *  maxMessage = "comment.too_long"
+     *)
      */
     private $content;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="authorEmail", type="string", length=255)
+     * @ORM\Column(type="string")
+     * @Assert\Email()
      */
     private $authorEmail;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="publishedAt", type="datetime")
+     * @ORM\Column(type="datetime")
+     * @Assert\DateTime()
      */
     private $publishedAt;
 
+    public function __construct()
+    {
+        $this->publishedAt = new \DateTime();
+    }
+
+    /**
+    * @Assert\IsTrue(message = "comment.is_spam")
+    */
+    public function isLegitComment()
+    {
+        $containsInvalidCharacters = false !== strpos($this->content, '@');
+
+        return !$containsInvalidCharacters;
+    }
 
     /**
      * Get id
@@ -63,13 +85,13 @@ class Comment
     /**
      * Set postId
      *
-     * @param integer $postId
+     * @param integer $post
      *
      * @return Comment
      */
-    public function setPostId($postId)
+    public function setPost(Post $post = null)
     {
-        $this->postId = $postId;
+        $this->post = $post;
 
         return $this;
     }
@@ -79,9 +101,9 @@ class Comment
      *
      * @return integer
      */
-    public function getPostId()
+    public function getPost()
     {
-        return $this->postId;
+        return $this->post;
     }
 
     /**
