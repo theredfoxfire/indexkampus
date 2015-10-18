@@ -3,6 +3,7 @@
 namespace IndexBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
@@ -10,44 +11,44 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="IndexBundle\Entity\UserRepository")
  */
-class User
+class User implements UserInterface
 {
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=255)
+     * @ORM\Column(type="string", unique=true)
      */
     private $username;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255)
+     * @ORM\Column(type="string", unique=true)
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=255)
+     * @ORM\Column(type="string")
      */
     private $password;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="roles", type="text")
+     * @ORM\Column(type="json_array")
      */
-    private $roles;
+    private $roles = array();
 
 
     /**
@@ -149,11 +150,34 @@ class User
     /**
      * Get roles
      *
-     * @return string
+     * @return the roles or permissions granted to the user for security.
      */
     public function getRoles()
     {
-        return $this->roles;
+        $roles = $this->roles;
+
+        //guarantees that user always has at least one role for security
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+
+        return array_unique($roles);
+    }
+
+    /**
+    * Returns the salt that was originally used to encode the password.
+    */
+    public function getSalt()
+    {
+        return;
+    }
+
+    /**
+    * Removes sensitive data from the user.
+    */
+    public function eraseCredentials()
+    {
+        
     }
 }
 

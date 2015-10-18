@@ -3,7 +3,8 @@
 namespace IndexBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Post
  *
@@ -12,57 +13,79 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Post
 {
+    const NUM_ITEMS = 10;
+
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255)
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      */
     private $title;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="slug", type="string", length=255)
+     * @ORM\Column(type="string")
      */
     private $slug;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="summary", type="string", length=255)
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="post.blank_summary")
      */
     private $summary;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="content", type="text")
+     * @ORM\Column(type="text")
+     * @Assert\Length(min = "10", minMessage = "post.too_short_content")
      */
     private $content;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="authorEmail", type="string", length=255)
+     * @ORM\Column(type="string")
+     * @Assert\Email()
      */
     private $authorEmail;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="publishedAt", type="datetime")
+     * @ORM\Column(type="datetime")
+     * @Assert\DateTime()
      */
     private $publishedAt;
 
+    /**
+    * @ORM\OneToMany(
+    *   targetEntity="Comment",
+    *   mappedBy="post",
+    *   orphanRemoval= true
+    * )
+    * @ORM\OrderBy({"publishedAt" = "DESC"})
+    */
+    private $comments;
+
+    public function __construct()
+    {
+        $this->publishedAt = new \DateTime();
+        $this->comments = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -217,5 +240,33 @@ class Post
     {
         return $this->publishedAt;
     }
-}
 
+    /**
+    * Is the given User the author of this Post?
+    *
+    * @param User $user
+    *
+    * @return bool
+    */
+    public function isAuthor(User $user = null)
+    {
+        return $user->getEmail() == $this->getAuthorEmail();
+    }
+
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment)
+    {
+        $this->comments->add($comment);
+        $comment->setPost($this);
+    }
+
+    public function removeComment(Comment $comment)
+    {
+        $this->comments->removeElement($comment);
+        $comment->setPost(null);
+    }
+}
