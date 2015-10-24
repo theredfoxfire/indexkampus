@@ -2,6 +2,7 @@
 
 namespace IndexBundle\Entity;
 
+use IndexBundle\Entity\Post;
 /**
  * PostRepository
  *
@@ -10,4 +11,15 @@ namespace IndexBundle\Entity;
  */
 class PostRepository extends \Doctrine\ORM\EntityRepository
 {
+	public function findLatest($limit = Post::NUM_ITEMS)
+	{
+		return $this->createQueryBuilder('p')
+			->select('p')
+			->where('p.publishedAt <= :now')->setParameter('now', new \DateTime())
+			->orderBy('p.publishedAt', 'desc')
+			->setMaxResults($limit)
+			->getQuery()
+			->getResult()
+			;
+	}
 }
