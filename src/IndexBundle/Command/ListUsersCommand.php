@@ -27,14 +27,21 @@ class ListUsersCommand extends ContainerAwareCommand
 		// a good practise is to use the app: prefix to group all your custom appliaction commands
 		->setName('app:list-users')
 		->setDescription('Lists all the existing users')
-		->setHelp(<<<HELP 
+		->setHelp(<<<HELP
 The <info>%command.name%</info> command lists all the users registered in the application:
-	<info>php %command.full_name%</info>
 
-By default the command only displays the 50 most recent users. set the number of
+  <info>php %command.full_name%</info>
+
+By default the command only displays the 50 most recent users. Set the number of
 results to display with the <comment>--max-results</comment> option:
 
-	<info>php %command.full_name%</info> <comment>--send-to=fabien@symfony.com</comment>
+  <info>php %command.full_name%</info> <comment>--max-results=2000</comment>
+
+In addition to displaying the user list, you can also send this information to
+the email address specified in the <comment>--send-to</comment> option:
+
+  <info>php %command.full_name%</info> <comment>--send-to=fabien@symfony.com</comment>
+
 HELP
 			)
 		->addOption('--max-results', null, InputOption::VALUE_OPTIONAL, 'Limits the number of users listed', 50)

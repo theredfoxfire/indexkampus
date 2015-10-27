@@ -96,7 +96,7 @@ class AddUserCommand extends ContainerAwareCommand
 		$email = $input->getArgument('email');
 		if (null === $email) {
 			$question = new Question(' > <info>Email</info>: ');
-			$question->setValidator(array($this-, 'emailValidator'));
+			$question->setValidator(array($this, 'emailValidator'));
 			$question->setMaxAttempts(self::MAX_ATTEMPTS);
 
 			$email = $console->ask($input, $output, $question);

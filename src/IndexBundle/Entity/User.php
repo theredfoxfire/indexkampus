@@ -6,157 +6,86 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * User
+ * @ORM\Entity(repositoryClass="IndexBundle\Repository\UserRepository")
  *
- * @ORM\Table()
- * @ORM\Entity(repositoryClass="IndexBundle\Entity\UserRepository")
+ * Defines the properties of the User entity to represent the application users.
+ * See http://symfony.com/doc/current/book/doctrine.html#creating-an-entity-class
+ *
+ * Tip: if you have an existing database, you can generate these entity class automatically.
+ * See http://symfony.com/doc/current/cookbook/doctrine/reverse_engineering.html
+ *
+ * @author Ryan Weaver <weaverryan@gmail.com>
+ * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
 class User implements UserInterface
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", unique=true)
      */
     private $username;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", unique=true)
      */
     private $email;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string")
      */
     private $password;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="json_array")
      */
     private $roles = array();
 
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Set username
-     *
-     * @param string $username
-     *
-     * @return User
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string
-     */
     public function getUsername()
     {
         return $this->username;
     }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return User
-     */
-    public function setEmail($email)
+    public function setUsername($username)
     {
-        $this->email = $email;
-
-        return $this;
+        $this->username = $username;
     }
 
-    /**
-     * Get email
-     *
-     * @return string
-     */
     public function getEmail()
     {
         return $this->email;
     }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
+    public function setEmail($email)
     {
-        $this->password = $password;
-
-        return $this;
+        $this->email = $email;
     }
 
-    /**
-     * Get password
-     *
-     * @return string
-     */
     public function getPassword()
     {
         return $this->password;
     }
-
-    /**
-     * Set roles
-     *
-     * @param string $roles
-     *
-     * @return User
-     */
-    public function setRoles($roles)
+    public function setPassword($password)
     {
-        $this->roles = $roles;
-
-        return $this;
+        $this->password = $password;
     }
 
     /**
-     * Get roles
-     *
-     * @return the roles or permissions granted to the user for security.
+     * Returns the roles or permissions granted to the user for security.
      */
     public function getRoles()
     {
         $roles = $this->roles;
 
-        //guarantees that user always has at least one role for security
+        // guarantees that a user always has at least one role for security
         if (empty($roles)) {
             $roles[] = 'ROLE_USER';
         }
@@ -164,20 +93,29 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
     /**
-    * Returns the salt that was originally used to encode the password.
-    */
+     * Returns the salt that was originally used to encode the password.
+     */
     public function getSalt()
     {
+        // See "Do you need to use a Salt?" at http://symfony.com/doc/current/cookbook/security/entity_provider.html
+        // we're using bcrypt in security.yml to encode the password, so
+        // the salt value is built-in and you don't have to generate one
+
         return;
     }
 
     /**
-    * Removes sensitive data from the user.
-    */
+     * Removes sensitive data from the user.
+     */
     public function eraseCredentials()
     {
-        
+        // if you had a plainPassword property, you'd nullify it here
+        // $this->plainPassword = null;
     }
 }
-

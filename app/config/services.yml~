@@ -5,30 +5,30 @@ services:
     # First we define some basic services to make these utilities available in
     # the entire application
     slugger:
-        class: IndexBundle\Utils\Slugger
+        class: AppBundle\Utils\Slugger
 
     markdown:
-        class: IndexBundle\Utils\Markdown
+        class: AppBundle\Utils\Markdown
 
     # These are the Twig extensions that create new filters and functions for
     # using them in the templates
     app.twig.app_extension:
         public:    false
-        class:     IndexBundle\Twig\AppExtension
+        class:     AppBundle\Twig\AppExtension
         arguments: ["@markdown"]
         tags:
             - { name: twig.extension }
 
     app.twig.locale_extension:
         public:    false
-        class:     IndexBundle\Twig\LocaleExtension
+        class:     AppBundle\Twig\LocaleExtension
         arguments: ["%app_locales%"]
         tags:
             - { name: twig.extension }
 
     app.twig.source_code_extension:
         public:    false
-        class:     IndexBundle\Twig\SourceCodeExtension
+        class:     AppBundle\Twig\SourceCodeExtension
         arguments: ["@twig.loader", "%kernel.root_dir%"]
         tags:
             - { name: twig.extension }
@@ -40,7 +40,7 @@ services:
             - { name: twig.extension }
 
     app.controller_listener:
-        class:     IndexBundle\EventListener\ControllerListener
+        class:     AppBundle\EventListener\ControllerListener
         arguments: ["@app.twig.source_code_extension"]
         tags:
             - { name: 'kernel.event_listener', event: kernel.controller, method: registerCurrentController }
@@ -52,11 +52,11 @@ services:
     # post_repository:
     #     class:     Doctrine\ORM\EntityRepository
     #     factory:   ["@doctrine.orm.entity_manager", getRepository]
-    #     arguments: [IndexBundle\Entity\Post]
+    #     arguments: [AppBundle\Entity\Post]
     #
     # // traditional code inside a controller
     # $em = $this->getDoctrine()->getManager();
-    # $posts = $em->getRepository('IndexBundle:Post')->findAll();
+    # $posts = $em->getRepository('AppBundle:Post')->findAll();
     #
     # // same code using repository services
     # $posts = $this->get('post_repository')->findAll();
